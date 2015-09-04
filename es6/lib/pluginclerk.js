@@ -199,7 +199,7 @@ export default class PluginClerk extends require('events').EventEmitter {
 
 		// fetch the database, either because it is the first time, or because the cache has been invalidated
 		const feedOptions = {parse: 'json', log: me.log}
-		const nameRegex = (/[^a-z]/)
+		const nameRegex = (/[^a-z0-9]/)
 		me.lastPoll = nowDate
 		me.log('notice', 'Refreshing the database at', nowDate)
 		require('chainy-core').create().require('set feed map')
@@ -218,19 +218,18 @@ export default class PluginClerk extends require('events').EventEmitter {
 			}, {concurrency: 0})
 			.action(function (plugins) {
 				plugins.forEach(function (pluginData) {
-					let code = pluginData.name
+					let name = pluginData.name
+					let code = name
 					if ( me.config.prefix ) {
-						code = pluginData.name.replace(me.config.prefix, '')
+						code = name.replace(me.config.prefix, '')
 						if ( code === name || nameRegex.test(code) ) {
 							// invalid plugin
-							me.log('warn', `Plugin ${pluginData.name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`)
+							me.log('warn', `Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`)
 							return
 						}
 					}
-					else {
-						me.log('info', `Plugin ${pluginData.name} was successfully added to the database.`)
-						me.database[pluginData.name] = pluginData
-					}
+					me.database[name] = pluginData
+					me.log('info', `Plugin ${name} was successfully added to the database.`)
 				})
 			})
 			.done(function (err) {

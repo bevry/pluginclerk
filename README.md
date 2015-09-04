@@ -182,8 +182,11 @@ No sponsors yet! Will you be the first?
 
 ### Contributors
 
-No contributors yet! Will you be the first?
-[Discover how you can contribute by heading on over to the `CONTRIBUTING.md` file.](https://github.com/bevry/pluginclerk/blob/master/CONTRIBUTING.md#files)
+These amazing people have contributed code to this project:
+
+- [Benjamin Lupton](https://github.com/balupton) <b@lupton.cc> — [view contributions](https://github.com/bevry/pluginclerk/commits?author=balupton)
+
+[Become a contributor!](https://github.com/bevry/pluginclerk/blob/master/CONTRIBUTING.md#files)
 
 <!-- /BACKERS -->
 

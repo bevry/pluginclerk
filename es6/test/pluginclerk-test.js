@@ -5,7 +5,7 @@ const PluginClerk = require('../../')
 
 // Task
 joe.describe('pluginclerk', function (describe, it) {
-	let pluginClerk
+	let pluginClerk, totalPlugins, totalPrefixedPlugins
 
 	describe('setup', function (describe, it) {
 		it('should fail to instantiate with no keyword', function () {
@@ -21,17 +21,38 @@ joe.describe('pluginclerk', function (describe, it) {
 
 		it('should instantiate successfully with a keyword', function () {
 			pluginClerk = PluginClerk.create({
-				keyword: 'docpad-plugin'
+				keyword: 'docpad-plugin',
+				log: console.log
 			})
 		})
-	})
 
-	describe('database', function (describe, it) {
 		it('should fetch the database successfully', function (next) {
 			pluginClerk.fetchDatabase({}, function (err, database) {
 				assert.errorEqual(err, null, 'no error to occur')
 				assert.equal(database, pluginClerk.database, 'database option and property should be the same')
-				assert.equal(Object.keys(database).length > 100, true, 'should have fetched over 100 plugins')
+				totalPlugins = Object.keys(database).length
+				assert.equal(totalPlugins > 100, true, `should have fetched over 100 plugins, it fetched ${totalPlugins}`)
+				next()
+			})
+		})
+	})
+
+	describe('setup', function (describe, it) {
+		it('should instantiate successfully with a keyword and prefix', function () {
+			pluginClerk = PluginClerk.create({
+				keyword: 'docpad-plugin',
+				prefix: 'docpad-plugin-',
+				log: console.log
+			})
+		})
+
+		it('should fetch the database successfully', function (next) {
+			pluginClerk.fetchDatabase({}, function (err, database) {
+				assert.errorEqual(err, null, 'no error to occur')
+				assert.equal(database, pluginClerk.database, 'database option and property should be the same')
+				totalPrefixedPlugins = Object.keys(database).length
+				assert.equal(totalPrefixedPlugins > 100, true, `should have fetched over 100 prefixed plugins, it fetched ${totalPrefixedPlugins}`)
+				assert.equal(totalPrefixedPlugins < totalPlugins, true, `prefixed plugins ${totalPrefixedPlugins} should be less than the total plugins ${totalPlugins}`)
 				next()
 			})
 		})

@@ -1,6 +1,6 @@
 {
   "name": "pluginclerk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A clerk for retrieving compatible plugins from the npm database",
   "homepage": "https://github.com/bevry/pluginclerk",
   "license": {
@@ -27,7 +27,9 @@
   "maintainers": [
     "Benjamin Lupton <b@lupton.cc> (https://github.com/balupton)"
   ],
-  "contributors": [],
+  "contributors": [
+    "Benjamin Lupton <b@lupton.cc> (https://github.com/balupton)"
+  ],
   "bugs": {
     "url": "https://github.com/bevry/pluginclerk/issues"
   },
