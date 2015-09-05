@@ -1,15 +1,17 @@
 {
   "name": "pluginclerk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A clerk for retrieving compatible plugins from the npm database",
   "homepage": "https://github.com/bevry/pluginclerk",
   "license": {
     "type": "MIT"
   },
   "keywords": [
-    "a",
-    "b",
-    "c"
+    "plugin",
+    "plugins",
+    "peerDependencies",
+    "dependencies",
+    "npm"
   ],
   "badges": {
     "travis": true,
@@ -41,6 +43,7 @@
     "node": ">=0.12"
   },
   "dependencies": {
+    "cachely": "^1.0.0",
     "chainy-core": "^1.5.0",
     "chainy-plugin-each": "^1.0.0",
     "chainy-plugin-feed": "^1.0.0",
