@@ -1,10 +1,17 @@
+/* eslint no-console:0 */
+'use strict'
+
 // Import
 const joe = require('joe')
 const assert = require('assert-helpers')
 const PluginClerk = require('../../')
 
+// Prepare
+const ACHIEVABLE_TOTAL_DOCPAD_PLUGINS = 100
+const DELAY_MILLISECONDS = 100
+
 // Task
-joe.describe('pluginclerk', function (describe, it) {
+joe.describe('pluginclerk', function (describe) {
 	let pluginClerk, totalPlugins, totalPrefixedPlugins
 
 	describe('setup', function (describe, it) {
@@ -30,7 +37,7 @@ joe.describe('pluginclerk', function (describe, it) {
 			pluginClerk.fetchDatabase({}, function (err, database) {
 				assert.errorEqual(err, null, 'no error to occur')
 				totalPlugins = Object.keys(database).length
-				assert.equal(totalPlugins > 100, true, `should have fetched over 100 plugins, it fetched ${totalPlugins}`)
+				assert.equal(totalPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins, it fetched ${totalPlugins}`)
 				next()
 			})
 		})
@@ -49,7 +56,7 @@ joe.describe('pluginclerk', function (describe, it) {
 			pluginClerk.fetchDatabase({}, function (err, database) {
 				assert.errorEqual(err, null, 'no error to occur')
 				totalPrefixedPlugins = Object.keys(database).length
-				assert.equal(totalPrefixedPlugins > 100, true, `should have fetched over 100 prefixed plugins, it fetched ${totalPrefixedPlugins}`)
+				assert.equal(totalPrefixedPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} prefixed plugins, it fetched ${totalPrefixedPlugins}`)
 				assert.equal(totalPrefixedPlugins < totalPlugins, true, `prefixed plugins ${totalPrefixedPlugins} should be less than the total plugins ${totalPlugins}`)
 				next()
 			})
@@ -58,11 +65,11 @@ joe.describe('pluginclerk', function (describe, it) {
 		it('should fetch the database from cache', function (next) {
 			const timeout = setTimeout(function () {
 				next(new Error('Fetching the database took to long, it should have been from the cache'))
-			}, 100)
+			}, DELAY_MILLISECONDS)
 			pluginClerk.fetchDatabase({}, function (err, database) {
 				clearTimeout(timeout)
 				assert.errorEqual(err, null, 'no error to occur')
-				assert.equal(Object.keys(database).length > 100, true, 'should have fetched over 100 plugins')
+				assert.equal(Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
 				next()
 			})
 		})
@@ -129,7 +136,7 @@ joe.describe('pluginclerk', function (describe, it) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
-				assert.equal(Object.keys(results.plugins).length > 100, true, 'should have fetched over 100 plugins')
+				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
 				const result = results.plugins['docpad-plugin-eco']
 				console.log(assert.inspect(result))
 				assert.equal(result.description.length !== 0, true, 'description property should exist')
@@ -152,7 +159,7 @@ joe.describe('pluginclerk', function (describe, it) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
-				assert.equal(Object.keys(results.plugins).length > 100, true, 'should have fetched over 100 plugins')
+				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
 				const result = results.plugins['docpad-plugin-eco']
 				console.log(assert.inspect(result))
 				assert.equal(result.description.length !== 0, true, 'description property should exist')

@@ -1,6 +1,12 @@
+/* eslint no-magic-numbers:0 */
+'use strict'
+
+// Import
 const eachr = require('eachr')
 const semver = require('semver')
-export default class PluginClerk {
+
+// Define
+class PluginClerk {
 	static create (...args) {
 		return new this(...args)
 	}
@@ -34,7 +40,7 @@ export default class PluginClerk {
 		const database = {}
 		me.log('notice', 'Requesting the database')
 		require('chainy-core').create().require('set feed map')
-			.set(me.config.registryKeywordUrl + '?startkey=[%22' + me.config.keyword + '%22]&endkey=[%22' + me.config.keyword + '%22,%7B%7D]&group_level=2')
+			.set(`${me.config.registryKeywordUrl}?startkey=[%22${me.config.keyword}%22]&endkey=[%22${me.config.keyword}%22,%7B%7D]&group_level=2`)
 			.feed(feedOptions)
 			.action(function (data) {
 				me.log('info', 'Fetching details for', data.rows.length, 'plugins')
@@ -46,7 +52,7 @@ export default class PluginClerk {
 					.set(`http://registry.npmjs.com/${pluginName}`)
 					.feed(feedOptions)
 					.action(function (pluginData) {
-						let name = pluginData.name
+						const name = pluginData.name
 						let code = name
 						if ( me.config.prefix ) {
 							code = name.replace(me.config.prefix, '')
@@ -182,7 +188,8 @@ export default class PluginClerk {
 				next(err)
 			}
 			else {
-				next(null, me.getPlugin({...opts, database}))
+				opts.database = database
+				next(null, me.getPlugin(opts))
 			}
 		})
 		return this
@@ -195,7 +202,8 @@ export default class PluginClerk {
 				next(err)
 			}
 			else {
-				next(null, me.getPlugins({...opts, database}))
+				opts.database = database
+				next(null, me.getPlugins(opts))
 			}
 		})
 		return this
@@ -206,3 +214,6 @@ export default class PluginClerk {
 		return this
 	}
 }
+
+// Export
+module.exports = PluginClerk
