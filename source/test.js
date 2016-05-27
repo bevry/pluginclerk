@@ -1,10 +1,9 @@
 /* eslint no-console:0 */
-'use strict'
 
 // Import
 const joe = require('joe')
 const assert = require('assert-helpers')
-const PluginClerk = require('../../')
+const PluginClerk = require('../')
 
 // Prepare
 const ACHIEVABLE_TOTAL_DOCPAD_PLUGINS = 100

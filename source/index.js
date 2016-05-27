@@ -1,6 +1,3 @@
-/* eslint no-magic-numbers:0 */
-'use strict'
-
 // Import
 const eachr = require('eachr')
 const semver = require('semver')
@@ -39,6 +36,8 @@ class PluginClerk {
 		const nameRegex = (/[^a-z0-9]/)
 		const database = {}
 		me.log('notice', 'Requesting the database')
+
+		/* eslint array-callback-return:0 */
 		require('chainy-core').create().require('set feed map')
 			.set(`${me.config.registryKeywordUrl}?startkey=[%22${me.config.keyword}%22]&endkey=[%22${me.config.keyword}%22,%7B%7D]&group_level=2`)
 			.feed(feedOptions)
