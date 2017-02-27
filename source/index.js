@@ -1,13 +1,37 @@
+'use strict'
+
 // Import
 const eachr = require('eachr')
 const semver = require('semver')
 
-// Define
+/**
+Plugin Clerk Class
+@constructor
+@class PluginClerk
+@access public
+*/
 class PluginClerk {
+	/**
+	Creates and returns new instance of the current class
+	@param {...*} args - the arguments to be forwarded along to the constructor
+	@return {Object} The new instance.
+	@static
+	@access public
+	*/
 	static create (...args) {
 		return new this(...args)
 	}
 
+	/**
+	Construct our class, setting the configuration from the options
+	@param {Object} opts
+	@param {string} opts.keyword - the keyword that is common among the packages we wish to fetch
+	@param {string} opts.prefix - the prefix that the names of the packages needed to begin with to be valid to our clerk
+	@param {Function} [opts.log] - defaults to `null`, can be a function that receives the arguments: `logLevel`, `...args`
+	@param {number} [opts.cacheDuration] - the amount of milliseconds until we have to query the npm database again, defaults to one day
+	@param {string} [opts.registryKeywordUrl] - the URL to the registry, will be set by default
+	@access public
+	*/
 	constructor (opts) {
 		this.config = {}
 
@@ -17,7 +41,7 @@ class PluginClerk {
 
 		this.config.keyword = opts.keyword
 		this.config.prefix = opts.prefix
-		this.config.registryKeywordUrl = 'http://skimdb.npmjs.com/registry/_design/app/_view/byKeyword'
+		this.config.registryKeywordUrl = 'https://registry.npmjs.org/-/_view/byKeyword'
 
 		this.log = opts.log || function () {}
 		this.cachely = require('cachely').create({
@@ -29,7 +53,14 @@ class PluginClerk {
 		this.lastUpdate = null
 	}
 
-	// next(err, data)
+	/**
+	The method that fetches the result from the registry and returns it to the cachely instance
+	@param {Function} next - the completion callback, accepting the arguments
+	@param {Error} [next.err] - an error that may have occured
+	@param {Array} [next.result] - the fetched packages from the registry that match the keyword
+	@returns {void}
+	@access private
+	*/
 	requestDatabase (next) {
 		const me = this
 		const feedOptions = {parse: 'json', log: this.log}
@@ -72,9 +103,24 @@ class PluginClerk {
 			})
 	}
 
-	// internal
-	// > {name:'docpad-plugin-eco', dependencies: [/* users dependencies */]}
-	// < {success, message, skippedVersions, latestVersion, installVersion, installPeers}
+	/**
+	Processes the package data for a plugin name, to return relevant install information, including consideration for dependency compatibility if provided.
+	@param {Object} opts
+	@param {Object} [opts.database] - the database result from {@link PluginClerk#fetchDatabase}
+	@param {Object} opts.name - the name of the package name for the plugin we wish to process the data for
+	@param {Object} [opts.dependencies] - this can be the dependencies that you are currently using to ensure compatibility with the fetched plugin
+	@param {Function} next - the completion callback, accepting the arguments
+	@param {Error} [next.err] - an error that may have occured
+	@param {Object} [next.result] - the result data, in the format of:
+	@param {Boolean} next.result.success - whether or not the process succeeded
+	@param {string} next.result.message - a message about success or failure
+	@param {Object} next.result.skippedVersions - if there were skipped versions to ensure compatibility, this is a mapping of the skipped version and the cause
+	@param {string} next.result.latestVersion - this is the latest version available for the package
+	@param {string} next.result.installVersion - this is the latest compatible version available for the package
+	@param {Array} next.result.installPeers - this is an array of peer dependency names that are missing and would need to be installed
+	@returns {void}
+	@access private
+	*/
 	getPlugin ({database, name, dependencies}) {
 		const result = {success: false, message: null}
 		const pluginData = database[name]
@@ -159,9 +205,24 @@ class PluginClerk {
 		return result
 	}
 
-	// internal
-	// > {dependencies: {}}
-	// < {success, message, plugins: {'docpad-plugin-eco': {name, description, homepage, compatabilityResult}}}
+	/**
+	Get the information for all the plugins in the database, with optional support for compatibility checks
+	@param {Object} opts
+	@param {Object} [opts.database] - the database result from {@link PluginClerk#fetchDatabase}
+	@param {Object} [opts.dependencies] - this can be the dependencies that you are currently using to ensure compatibility with the fetched plugin
+	@param {Function} next - the completion callback, accepting the arguments
+	@param {Error} [next.err] - an error that may have occured
+	@param {Object} [next.result] - the result data, in the format of:
+	@param {Boolean} next.result.success - whether or not the process succeeded
+	@param {string} next.result.message - a message about success or failure
+	@param {Object} next.result.plugins - the processed results for each plugin, mapped by plugin name
+	@param {string} next.result.plugins.name.description - the description for the plugin
+	@param {string} next.result.plugins.name.homepage - the homepage for the plugin
+	@param {string} next.result.plugins.name.version - the latest version for the plugin
+	@param {string} next.result.plugins.name.compatibility - if opts.dependencies provided, this is  {@link PluginClerk#getPlugin} result
+	@returns {void}
+	@access private
+	*/
 	getPlugins ({database, dependencies}) {
 		const me = this
 		const result = {success: true, message: 'Successfully fetched the plugins', plugins: {}}
@@ -180,6 +241,14 @@ class PluginClerk {
 		return result
 	}
 
+	/**
+	Fetches the database via {@link PluginClerk#fetchDatabase} and then processes the data according to {@link PluginClerk#getPlugin}
+	@param {Object} opts - forwarded to {@link PluginClerk#getPlugin} with `database` prefilled
+	@param {Function} next - forwarded to {@link PluginClerk#getPlugin}
+	@returns {this}
+	@chainable
+	@access public
+	*/
 	fetchPlugin (opts, next) {
 		const me = this
 		this.fetchDatabase(null, function (err, database) {
@@ -194,6 +263,14 @@ class PluginClerk {
 		return this
 	}
 
+	/**
+	Fetches the database via {@link PluginClerk#fetchDatabase} and then processes the data according to {@link PluginClerk#getPlugins}
+	@param {Object} opts - forwarded to {@link PluginClerk#getPlugins} with `database` prefilled
+	@param {Function} next - forwarded to {@link PluginClerk#getPlugins}
+	@returns {this}
+	@chainable
+	@access public
+	*/
 	fetchPlugins (opts, next) {
 		const me = this
 		this.fetchDatabase(null, function (err, database) {
@@ -208,6 +285,14 @@ class PluginClerk {
 		return this
 	}
 
+	/**
+	Fetches the unprocessed data for the plugins that were fetched from the registry via the caching layer.
+	@param {Object} [opts] - not used, here for consistency only
+	@param {Function} next - the results from {@link PluginClerk#requestDatabase}
+	@returns {this}
+	@chainable
+	@access private
+	*/
 	fetchDatabase (opts, next) {
 		this.cachely.request(next)
 		return this

@@ -1,4 +1,5 @@
 /* eslint no-console:0 */
+'use strict'
 
 // Import
 const joe = require('joe')
@@ -68,7 +69,7 @@ joe.describe('pluginclerk', function (describe) {
 			pluginClerk.fetchDatabase({}, function (err, database) {
 				clearTimeout(timeout)
 				assert.errorEqual(err, null, 'no error to occur')
-				assert.equal(Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
+				assert.equal(Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`)
 				next()
 			})
 		})
@@ -135,7 +136,7 @@ joe.describe('pluginclerk', function (describe) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
-				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
+				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`)
 				const result = results.plugins['docpad-plugin-eco']
 				console.log(assert.inspect(result))
 				assert.equal(result.description.length !== 0, true, 'description property should exist')
@@ -158,7 +159,7 @@ joe.describe('pluginclerk', function (describe) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
-				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, 'should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins')
+				assert.equal(Object.keys(results.plugins).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`)
 				const result = results.plugins['docpad-plugin-eco']
 				console.log(assert.inspect(result))
 				assert.equal(result.description.length !== 0, true, 'description property should exist')

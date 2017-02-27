@@ -1,5 +1,10 @@
 # History
 
+## v1.2.0 2017 February 27
+- Fixed registry requests failing as the default registry URL that was used no longer works, so updated to one that does
+- Updated dependencies
+- Added API docs
+
 ## v1.1.0 2016 May 27
 - Updated internal conventions
   - Moved from [ESNextGuardian](https://github.com/bevry/esnextguardian) to [Editions](https://github.com/bevry/editions)
