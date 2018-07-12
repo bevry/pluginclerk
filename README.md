@@ -15,7 +15,6 @@
 <br class="badge-separator" />
 <span class="badge-patreon"><a href="https://patreon.com/bevry" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Patreon donate button" /></a></span>
 <span class="badge-opencollective"><a href="https://opencollective.com/bevry" title="Donate to this project using Open Collective"><img src="https://img.shields.io/badge/open%20collective-donate-yellow.svg" alt="Open Collective donate button" /></a></span>
-<span class="badge-gratipay"><a href="https://www.gratipay.com/bevry" title="Donate weekly to this project using Gratipay"><img src="https://img.shields.io/badge/gratipay-donate-yellow.svg" alt="Gratipay donate button" /></a></span>
 <span class="badge-flattr"><a href="https://flattr.com/profile/balupton" title="Donate to this project using Flattr"><img src="https://img.shields.io/badge/flattr-donate-yellow.svg" alt="Flattr donate button" /></a></span>
 <span class="badge-paypal"><a href="https://bevry.me/paypal" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPal donate button" /></a></span>
 <span class="badge-bitcoin"><a href="https://bevry.me/bitcoin" title="Donate once-off to this project using Bitcoin"><img src="https://img.shields.io/badge/bitcoin-donate-yellow.svg" alt="Bitcoin donate button" /></a></span>
@@ -44,7 +43,7 @@ A clerk for retrieving compatible plugins from the npm database
 <a href="http://browserify.org" title="Browserify lets you require('modules') in the browser by bundling up all of your dependencies"><h3>Browserify</h3></a><ul>
 <li>Install: <code>npm install --save pluginclerk</code></li>
 <li>Module: <code>require('pluginclerk')</code></li>
-<li>CDN URL: <code>//wzrd.in/bundle/pluginclerk@1.2.0</code></li></ul>
+<li>CDN URL: <code>//wzrd.in/bundle/pluginclerk@2.0.0</code></li></ul>
 
 <a href="http://enderjs.com" title="Ender is a full featured package manager for your browser"><h3>Ender</h3></a><ul>
 <li>Install: <code>ender add pluginclerk</code></li>
@@ -68,104 +67,106 @@ A clerk for retrieving compatible plugins from the npm database
 [API Documentation.](http://master.pluginclerk.bevry.surge.sh/docs/)
 
 ``` javascript
+'use strict'
+
 const clerk = require('pluginclerk').create({
-	// Required: The keyword that must be specified inside the plugin's package.json:keywords property
-	keyword: 'docpad-plugin',
+    // Required: The keyword that must be specified inside the plugin's package.json:keywords property
+    keyword: 'docpad-plugin',
 
-	// Optional: A prefix that the name of the plugin must be prefixed by to be valid
-	// Defaults to nothing
-	prefix: 'docpad-plugin-',
+    // Optional: A prefix that the name of the plugin must be prefixed by to be valid
+    // Defaults to nothing
+    prefix: 'docpad-plugin-',
 
-	// Optional: A function used for logging receives the arguments (logLevel, ...message)
-	// Defaults to nothing
-	log: console.log,
+    // Optional: A function used for logging receives the arguments (logLevel, ...message)
+    // Defaults to nothing
+    log: console.log,
 
-	// Optional: The amount of milliseconds until we have to query the npm database again
-	// Defaults to one day
-	cacheDuration: null,
+    // Optional: The amount of milliseconds until we have to query the npm database again
+    // Defaults to one day
+    cacheDuration: null,
 
-	// Optional: The URL of the npm registry's byKeyword view that we should use for fetching the plugins
-	// Defaults to http://skimdb.npmjs.com/registry/_design/app/_view/byKeyword
-	registryKeywordUrl: null
+    // Optional: The registry hostname we should use for the API calls
+    // Defaults to "https://registry.npmjs.org"
+    registryHostname: null
 })
 
 // Fetch the latest version of a particular plugin
 // Note the `installPeers` result,
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and no dependencies where supplied, it should be installed
-clerk.fetchPlugin({name: 'docpad-plugin-eco'}, function (err, result) {
-	/* result will be an object like {
-		success: true,
-		message: 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
-		skippedVersions: {},
-		latestVersion: '2.1.0',
-		installVersion: '2.1.0',
-		installPeers: [ 'docpad' ]
-	} */
-})
+clerk.fetchPlugin({ name: 'docpad-plugin-eco' }).catch(console.error).then(console.log)
+
+/* {
+    success: true,
+    message: 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
+    skippedVersions: {},
+    latestVersion: '2.1.0',
+    installVersion: '2.1.0',
+    installPeers: [ 'docpad' ]
+} */
 
 // Fetch the latest version of a particular plugin that is compatible with the specified dependencies
 // Note the `installPeers` result,
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
-clerk.fetchPlugin({name: 'docpad-plugin-eco', dependencies: {docpad: '6.78.0'}}, function (err, result) {
-	/* result will be an object like {
-		success: true,
-		message: 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
-		skippedVersions: {},
-		latestVersion: '2.1.0',
-		installVersion: '2.1.0',
-		installPeers: [ ]
-	} */
-})
+clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '6.78.0' } }).catch(console.error).then(console.log)
+
+/* {
+    success: true,
+    message: 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
+    skippedVersions: {},
+    latestVersion: '2.1.0',
+    installVersion: '2.1.0',
+    installPeers: [ ]
+} */
 
 // Fetch the latest version of a particular plugin that is compatible with the specified dependencies
 // Note the `installVersion` and `skippedVersions` results,
 //   a few plugin versions where skipped because they required a `docpad` version range that our supplied `docpad` version didn't fulfill
 // Note the `installPeers` result
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
-clerk.fetchPlugin({name: 'docpad-plugin-eco', dependencies: {docpad: '5.0.0'}}, function (err, result) {
-	/* result will be an object like {
-		success: true,
-		message: 'Successfully fetched an older and compatible version of the plugin docpad-plugin-eco',
-		skippedVersions: {
-			'2.1.0': { docpad: '^6.59.0' }
-			'2.0.0': { docpad: '^6.53.0' }
-		},
-		latestVersion: '2.1.0',
-		installVersion: '1.0.0',
-		installPeers: [] }
-	} */
-})
+clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '5.0.0' } }).catch(console.error).then(console.log)
+
+/* ] {
+    success: true,
+    message: 'Successfully fetched an older and compatible version of the plugin docpad-plugin-eco',
+    skippedVersions: {
+         '2.1.0': { docpad: '^6.59.0' }
+         '2.0.0': { docpad: '^6.53.0' }
+    },
+    latestVersion: '2.1.0',
+    installVersion: '1.0.0',
+    installPeers: [] }
+} */
 
 // You can also fetch all plugins with some basic information
-clerk.fetchPlugins({}, function (err, result) {
-	/* result will be an object like {
-		success: true,
-		message: 'Successfully fetched the plugins',
-		plugins: {
-			'docpad-plugin-eco': {
-				'description': '...',
-				'homepage': '...',
-				'version': '2.1.0'
-			}
-		}
-	} */
-})
+clerk.fetchPlugins({}).catch(console.error).then(console.log)
+
+/* {
+    success: true,
+    message: 'Successfully fetched the plugins',
+    plugins: {
+         'docpad-plugin-eco': {
+              'description': '...',
+              'homepage': '...',
+              'version': '2.1.0'
+         }
+    }
+} */
 
 // You can also fetch all plugins with their compatibility information
-clerk.fetchPlugins({dependencies: {docpad: '5.0.0'}}, function (err, result) {
-	/* result will be an object like {
-		success: true,
-		message: 'Successfully fetched the plugins',
-		plugins: {
-			'docpad-plugin-eco': {
-				'description': '...',
-				'homepage': '...',
-				'version': '1.0.0',
-				'compatibility': {}  // result of fetchPlugin
-			}
-		}
-	} */
-})
+clerk.fetchPlugins({ dependencies: { docpad: '5.0.0' } }).catch(console.error).then(console.log)
+
+/* {
+    success: true,
+    message: 'Successfully fetched the plugins',
+    plugins: {
+         'docpad-plugin-eco': {
+              'description': '...',
+              'homepage': '...',
+              'version': '1.0.0',
+              'compatibility': {}  // result of fetchPlugin
+         }
+    }
+} */
 ```
 
 <!-- HISTORY/ -->
@@ -202,7 +203,6 @@ No sponsors yet! Will you be the first?
 
 <span class="badge-patreon"><a href="https://patreon.com/bevry" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Patreon donate button" /></a></span>
 <span class="badge-opencollective"><a href="https://opencollective.com/bevry" title="Donate to this project using Open Collective"><img src="https://img.shields.io/badge/open%20collective-donate-yellow.svg" alt="Open Collective donate button" /></a></span>
-<span class="badge-gratipay"><a href="https://www.gratipay.com/bevry" title="Donate weekly to this project using Gratipay"><img src="https://img.shields.io/badge/gratipay-donate-yellow.svg" alt="Gratipay donate button" /></a></span>
 <span class="badge-flattr"><a href="https://flattr.com/profile/balupton" title="Donate to this project using Flattr"><img src="https://img.shields.io/badge/flattr-donate-yellow.svg" alt="Flattr donate button" /></a></span>
 <span class="badge-paypal"><a href="https://bevry.me/paypal" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPal donate button" /></a></span>
 <span class="badge-bitcoin"><a href="https://bevry.me/bitcoin" title="Donate once-off to this project using Bitcoin"><img src="https://img.shields.io/badge/bitcoin-donate-yellow.svg" alt="Bitcoin donate button" /></a></span>

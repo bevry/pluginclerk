@@ -1,5 +1,10 @@
 # History
 
+## v2.0.0 2018 July 12
+- API updated to use promises instead
+- Minimum supported node version is now version 8, due to the usage of async/await
+- Updated dependencies
+
 ## v1.2.0 2017 February 27
 - Fixed registry requests failing as the default registry URL that was used no longer works, so updated to one that does
 - Updated dependencies

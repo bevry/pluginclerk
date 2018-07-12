@@ -34,8 +34,7 @@ joe.describe('pluginclerk', function (describe) {
 		})
 
 		it('should fetch the database successfully', function (next) {
-			pluginClerk.fetchDatabase({}, function (err, database) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchDatabase().catch(next).then(function (database) {
 				totalPlugins = Object.keys(database).length
 				assert.equal(totalPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins, it fetched ${totalPlugins}`)
 				next()
@@ -53,8 +52,7 @@ joe.describe('pluginclerk', function (describe) {
 		})
 
 		it('should fetch the database successfully', function (next) {
-			pluginClerk.fetchDatabase({}, function (err, database) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchDatabase().catch(next).then(function (database) {
 				totalPrefixedPlugins = Object.keys(database).length
 				assert.equal(totalPrefixedPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} prefixed plugins, it fetched ${totalPrefixedPlugins}`)
 				assert.equal(totalPrefixedPlugins < totalPlugins, true, `prefixed plugins ${totalPrefixedPlugins} should be less than the total plugins ${totalPlugins}`)
@@ -66,9 +64,8 @@ joe.describe('pluginclerk', function (describe) {
 			const timeout = setTimeout(function () {
 				next(new Error('Fetching the database took to long, it should have been from the cache'))
 			}, DELAY_MILLISECONDS)
-			pluginClerk.fetchDatabase({}, function (err, database) {
+			pluginClerk.fetchDatabase().catch(next).then(function (database) {
 				clearTimeout(timeout)
-				assert.errorEqual(err, null, 'no error to occur')
 				assert.equal(Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS, true, `should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`)
 				next()
 			})
@@ -83,8 +80,7 @@ joe.describe('pluginclerk', function (describe) {
 					docpad: '5.0.0'
 				}
 			}
-			pluginClerk.fetchPlugin(opts, function (err, result) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchPlugin(opts).catch(next).then(function (result) {
 				console.log(assert.inspect(result))
 				assert.equal(result.success, true, 'success property to be correct')
 				assert.equal(result.message, 'Successfully fetched an older and compatible version of the plugin docpad-plugin-eco', 'message property to be correct')
@@ -102,8 +98,7 @@ joe.describe('pluginclerk', function (describe) {
 					docpad: '6.0.0'
 				}
 			}
-			pluginClerk.fetchPlugin(opts, function (err, result) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchPlugin(opts).catch(next).then(function (result) {
 				console.log(assert.inspect(result))
 				assert.equal(result.success, true, 'success property to be correct')
 				assert.equal(result.message, 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco', 'message property to be correct')
@@ -116,8 +111,7 @@ joe.describe('pluginclerk', function (describe) {
 			const opts = {
 				name: 'docpad-plugin-eco'
 			}
-			pluginClerk.fetchPlugin(opts, function (err, result) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchPlugin(opts).catch(next).then(function (result) {
 				console.log(assert.inspect(result))
 				assert.equal(result.success, true, 'success property to be correct')
 				assert.equal(result.message, 'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco', 'message property to be correct')
@@ -131,8 +125,7 @@ joe.describe('pluginclerk', function (describe) {
 
 	describe('plugins', function (describe, it) {
 		it('should fetch the latest plugins successfully', function (next) {
-			pluginClerk.fetchPlugins({}, function (err, results) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchPlugins({}).catch(next).then(function (results) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
@@ -154,8 +147,7 @@ joe.describe('pluginclerk', function (describe) {
 					docpad: '5.0.0'
 				}
 			}
-			pluginClerk.fetchPlugins(opts, function (err, results) {
-				assert.errorEqual(err, null, 'no error to occur')
+			pluginClerk.fetchPlugins(opts).catch(next).then(function (results) {
 				assert.equal(results.success, true, 'success property to be correct')
 				assert.equal(results.message, 'Successfully fetched the plugins', 'message property to be correct')
 
