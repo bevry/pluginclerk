@@ -1,6 +1,6 @@
 {
   "name": "pluginclerk",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A clerk for retrieving compatible plugins from the npm database",
   "homepage": "https://github.com/bevry/pluginclerk",
   "license": "MIT",
