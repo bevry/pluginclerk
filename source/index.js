@@ -59,18 +59,20 @@ Construct our PluginClerk class, setting the configuration from the options
 @public
 */
 class PluginClerk {
-	constructor (opts) {
+	constructor(opts) {
 		this.config = {}
 
 		if (!opts || !opts.keyword) {
-			throw new Error('The plugin clerk requires a keyword to be specified, please refer to the API specification')
+			throw new Error(
+				'The plugin clerk requires a keyword to be specified, please refer to the API specification'
+			)
 		}
 
 		this.config.keyword = opts.keyword
 		this.config.prefix = opts.prefix
 		this.config.registryHostname = 'https://registry.npmjs.org'
 
-		this.log = opts.log || function () { }
+		this.log = opts.log || function() {}
 		this.cachely = require('cachely').create({
 			retrieve: this.requestDatabase.bind(this),
 			duration: opts.cacheDuration,
@@ -87,7 +89,7 @@ class PluginClerk {
 	@static
 	@public
 	*/
-	static create (...args) {
+	static create(...args) {
 		return new this(...args)
 	}
 
@@ -96,9 +98,9 @@ class PluginClerk {
 	@returns {Promise<Object>} - the fetched packages from the registry that match the keyword
 	@protected
 	*/
-	async requestDatabase ({ database = {}, offset = 0 } = {}) {
+	async requestDatabase({ database = {}, offset = 0 } = {}) {
 		const me = this
-		const nameRegex = (/[^a-z0-9]/)
+		const nameRegex = /[^a-z0-9]/
 		const url = `${me.config.registryHostname}/-/v1/search?text=keywords:${me.config.keyword}&size=250&from=${offset}`
 		let data = null
 
@@ -114,34 +116,44 @@ class PluginClerk {
 
 			me.log('info', 'Fetching details for', data.objects.length, 'plugins')
 			await Promise.all(
-				data.objects.map(async function (entry) {
+				data.objects.map(async function(entry) {
 					const name = entry.package.name
 					let pluginData = null
 					try {
-						const response = await fetch(`${me.config.registryHostname}/${name}`)
+						const response = await fetch(
+							`${me.config.registryHostname}/${name}`
+						)
 						pluginData = await response.json()
-					}
-					catch (err) {
+					} catch (err) {
 						return Promise.reject(err)
 					}
 					if (name !== pluginData.name) {
-						return Promise.reject(new Error('name result from search and from package did not match'))
+						return Promise.reject(
+							new Error(
+								'name result from search and from package did not match'
+							)
+						)
 					}
 					if (me.config.prefix) {
 						const code = name.replace(me.config.prefix, '')
 						if (code === name || nameRegex.test(code)) {
 							// invalid plugin
-							me.log('warn', `Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`)
+							me.log(
+								'warn',
+								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`
+							)
 							return Promise.resolve()
 						}
 					}
 					database[name] = pluginData
-					me.log('info', `Plugin ${name} was successfully added to the database.`)
+					me.log(
+						'info',
+						`Plugin ${name} was successfully added to the database.`
+					)
 					return Promise.resolve()
 				})
 			)
-		}
-		catch (err) {
+		} catch (err) {
 			me.log('error', 'Fetching database content failed', err)
 			return Promise.reject(err)
 		}
@@ -153,7 +165,10 @@ class PluginClerk {
 		// however, this can be a PR by someone, as need to get this out sooner than later
 		const subtotal = data.objects.length + offset
 		if (subtotal + offset !== Number(data.total)) {
-			me.log('info', 'Fetched a portion of the database content, grabbing the rest')
+			me.log(
+				'info',
+				'Fetched a portion of the database content, grabbing the rest'
+			)
 			return this.requestDatabase({ database, offset: subtotal })
 		}
 
@@ -167,7 +182,7 @@ class PluginClerk {
 	@returns {Promise<PluginResult>}
 	@protected
 	*/
-	getPlugin ({ database, name, dependencies }) {
+	getPlugin({ database, name, dependencies }) {
 		const result = { success: false, message: null }
 		const pluginData = database[name]
 
@@ -193,20 +208,22 @@ class PluginClerk {
 			// cycle through the plugins versions
 			// to discover the most recent version that satisfies installed dependencies
 			const pluginVersionsData = pluginData.versions
-			const pluginVersionsKeysLatestFirst = Object.keys(pluginVersionsData).reverse()
-			eachr(pluginVersionsKeysLatestFirst, function (pluginVersion) {
+			const pluginVersionsKeysLatestFirst = Object.keys(
+				pluginVersionsData
+			).reverse()
+			eachr(pluginVersionsKeysLatestFirst, function(pluginVersion) {
 				const pluginVersionData = pluginVersionsData[pluginVersion]
 				const pluginVersionMissingPeers = []
-				function compat (list, type) {
-					eachr(list || {}, function (acceptedRange, name) {
+				function compat(list, type) {
+					eachr(list || {}, function(acceptedRange, name) {
 						const suppliedVersion = dependencies[name]
 						if (suppliedVersion) {
 							if (semver.satisfies(suppliedVersion, acceptedRange) === false) {
-								if (result.skippedVersions[pluginVersion] == null) result.skippedVersions[pluginVersion] = {}
+								if (result.skippedVersions[pluginVersion] == null)
+									result.skippedVersions[pluginVersion] = {}
 								result.skippedVersions[pluginVersion][name] = acceptedRange
 							}
-						}
-						else if (type !== 'engines') {
+						} else if (type !== 'engines') {
 							pluginVersionMissingPeers.push(name)
 						}
 					})
@@ -222,16 +239,15 @@ class PluginClerk {
 
 				// check if this version is to be skipped
 				if (result.skippedVersions[pluginVersion]) {
-					return true  // continue
+					return true // continue
 				}
 
 				// version is okay, so install this one
 				result.installVersion = pluginVersion
 				result.installPeers = pluginVersionMissingPeers
-				return false  // break
+				return false // break
 			})
-		}
-		catch (err) {
+		} catch (err) {
 			result.message = 'The compatiblity checks failed'
 			this.log('warn', 'The compatibility checks failed with error:', err.stack)
 			return result
@@ -239,11 +255,13 @@ class PluginClerk {
 
 		// Check if we found a version to install
 		if (result.installVersion) {
-			const status = result.latestVersion === result.installVersion ? 'the latest' : 'an older'
+			const status =
+				result.latestVersion === result.installVersion
+					? 'the latest'
+					: 'an older'
 			result.success = true
 			result.message = `Successfully fetched ${status} and compatible version of the plugin ${name}`
-		}
-		else {
+		} else {
 			result.message = `Failed to find a compatible version of the plugin ${name}`
 		}
 
@@ -257,17 +275,25 @@ class PluginClerk {
 	@returns {Promise<PluginsResult>}
 	@protected
 	*/
-	getPlugins ({ database, dependencies }) {
+	getPlugins({ database, dependencies }) {
 		const me = this
-		const result = { success: true, message: 'Successfully fetched the plugins', plugins: {} }
-		eachr(database, function (pluginData, pluginName) {
+		const result = {
+			success: true,
+			message: 'Successfully fetched the plugins',
+			plugins: {}
+		}
+		eachr(database, function(pluginData, pluginName) {
 			const pluginResult = {
 				description: pluginData.description,
 				homepage: pluginData.homepage,
 				version: pluginData['dist-tags'].latest
 			}
 			if (dependencies) {
-				pluginResult.compatibility = me.getPlugin({ name: pluginName, dependencies, database })
+				pluginResult.compatibility = me.getPlugin({
+					name: pluginName,
+					dependencies,
+					database
+				})
 				pluginResult.version = pluginResult.compatibility.installVersion
 			}
 			result.plugins[pluginName] = pluginResult
@@ -281,12 +307,11 @@ class PluginClerk {
 	@returns {Promise<PluginResult>}
 	@public
 	*/
-	async fetchPlugin (opts = {}) {
+	async fetchPlugin(opts = {}) {
 		try {
 			const database = await this.fetchDatabase()
 			opts.database = database
-		}
-		catch (err) {
+		} catch (err) {
 			return Promise.reject(err)
 		}
 		return this.getPlugin(opts)
@@ -298,12 +323,11 @@ class PluginClerk {
 	@returns {Promise<PluginsResult>}
 	@public
 	*/
-	async fetchPlugins (opts = {}) {
+	async fetchPlugins(opts = {}) {
 		try {
 			const database = await this.fetchDatabase()
 			opts.database = database
-		}
-		catch (err) {
+		} catch (err) {
 			return Promise.reject(err)
 		}
 		return this.getPlugins(opts)
@@ -314,7 +338,7 @@ class PluginClerk {
 	@returns {Promise<Database>}
 	@protected
 	*/
-	fetchDatabase () {
+	fetchDatabase() {
 		return this.cachely.resolve()
 	}
 }
