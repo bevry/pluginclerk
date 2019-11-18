@@ -92,7 +92,7 @@
   "browser": "edition-browsers/index.js",
   "dependencies": {
     "cachely": "^2.1.0",
-    "eachr": "^3.2.0",
+    "eachr": "^4.1.0",
     "node-fetch": "^2.6.0",
     "semver": "^6.3.0"
   },
