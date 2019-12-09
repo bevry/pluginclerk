@@ -24,7 +24,10 @@ const clerk = require('./').create({
 // Fetch the latest version of a particular plugin
 // Note the `installPeers` result,
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and no dependencies where supplied, it should be installed
-clerk.fetchPlugin({ name: 'docpad-plugin-eco' }).catch(console.error).then(console.log)
+clerk
+	.fetchPlugin({ name: 'docpad-plugin-eco' })
+	.then(console.log)
+	.catch(console.error)
 
 /* {
 	success: true,
@@ -38,7 +41,13 @@ clerk.fetchPlugin({ name: 'docpad-plugin-eco' }).catch(console.error).then(conso
 // Fetch the latest version of a particular plugin that is compatible with the specified dependencies
 // Note the `installPeers` result,
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
-clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '6.78.0' } }).catch(console.error).then(console.log)
+clerk
+	.fetchPlugin({
+		name: 'docpad-plugin-eco',
+		dependencies: { docpad: '6.78.0' }
+	})
+	.then(console.log)
+	.catch(console.error)
 
 /* {
 	success: true,
@@ -54,7 +63,10 @@ clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '6.78.0' 
 //   a few plugin versions where skipped because they required a `docpad` version range that our supplied `docpad` version didn't fulfill
 // Note the `installPeers` result
 //   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
-clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '5.0.0' } }).catch(console.error).then(console.log)
+clerk
+	.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '5.0.0' } })
+	.then(console.log)
+	.catch(console.error)
 
 /* ] {
 	success: true,
@@ -69,7 +81,10 @@ clerk.fetchPlugin({ name: 'docpad-plugin-eco', dependencies: { docpad: '5.0.0' }
 } */
 
 // You can also fetch all plugins with some basic information
-clerk.fetchPlugins({}).catch(console.error).then(console.log)
+clerk
+	.fetchPlugins({})
+	.then(console.log)
+	.catch(console.error)
 
 /* {
 	success: true,
@@ -84,7 +99,10 @@ clerk.fetchPlugins({}).catch(console.error).then(console.log)
 } */
 
 // You can also fetch all plugins with their compatibility information
-clerk.fetchPlugins({ dependencies: { docpad: '5.0.0' } }).catch(console.error).then(console.log)
+clerk
+	.fetchPlugins({ dependencies: { docpad: '5.0.0' } })
+	.then(console.log)
+	.catch(console.error)
 
 /* {
 	success: true,

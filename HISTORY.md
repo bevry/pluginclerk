@@ -1,5 +1,12 @@
 # History
 
+## v3.0.0 2019 December 9
+
+-   Converted to TypeScript
+-   Result of `getPlugins` no longer changes `.version` to `.compatibility.installVersion`, use `.compatibility.installVersion` if that is what you want
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+-   Minimum required node version changed from `node: >=0.8` to `node: >=10` to keep up with mandatory ecosystem changes
+
 ## v2.1.0 2019 September 11
 
 -   Updated [base files](https://github.com/bevry/base) and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
