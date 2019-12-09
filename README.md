@@ -48,8 +48,8 @@ A clerk for retrieving compatible plugins from the npm database
 <p>This package is published with the following editions:</p>
 
 <ul><li><code>pluginclerk/source/index.ts</code> is typescript source code with import for modules</li>
-<li><code>pluginclerk</code> aliases <code>pluginclerk/edition-node-13/index.js</code></li>
-<li><code>pluginclerk/edition-node-13/index.js</code> is typescript compiled for node.js 13 with require for modules</li></ul>
+<li><code>pluginclerk</code> aliases <code>pluginclerk/edition-node-12/index.js</code></li>
+<li><code>pluginclerk/edition-node-12/index.js</code> is typescript compiled for node.js 12 with require for modules</li></ul>
 
 <!-- /INSTALL -->
 
