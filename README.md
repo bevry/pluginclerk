@@ -59,9 +59,10 @@ A clerk for retrieving compatible plugins from the npm database
 [API Documentation.](http://master.pluginclerk.bevry.surge.sh/docs/)
 
 ```javascript
-'use strict'
+import PluginClerk from 'pluginclerk'
 
-const clerk = require('pluginclerk').create({
+// Create the new clerk instance with our configuration
+const clerk = new PluginClerk({
     // Required: The keyword that must be specified inside the plugin's package.json:keywords property
     keyword: 'docpad-plugin',
 
@@ -84,7 +85,8 @@ const clerk = require('pluginclerk').create({
 
 // Fetch the latest version of a particular plugin
 // Note the `installPeers` result,
-//   as `docpad-plugin-eco` has the peerDependency `docpad`, and no dependencies where supplied, it should be installed
+// as `docpad-plugin-eco` has the peerDependency `docpad`,
+// and no dependencies where supplied, it should be installed
 clerk
     .fetchPlugin({ name: 'docpad-plugin-eco' })
     .then(console.log)
@@ -101,7 +103,8 @@ clerk
 
 // Fetch the latest version of a particular plugin that is compatible with the specified dependencies
 // Note the `installPeers` result,
-//   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
+// as `docpad-plugin-eco` has the peerDependency `docpad`,
+// and we supplied it, there is no need to install it
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
@@ -121,9 +124,9 @@ clerk
 
 // Fetch the latest version of a particular plugin that is compatible with the specified dependencies
 // Note the `installVersion` and `skippedVersions` results,
-//   a few plugin versions where skipped because they required a `docpad` version range that our supplied `docpad` version didn't fulfill
-// Note the `installPeers` result
-//   as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
+// a few plugin versions where skipped because they required a `docpad` version range that our supplied `docpad` version didn't fulfill
+// Note the `installPeers` result,
+// as `docpad-plugin-eco` has the peerDependency `docpad`, and we supplied it, there is no need to install it
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
