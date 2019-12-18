@@ -1,7 +1,7 @@
 'use strict'
 
 // Import
-import semver from 'semver'
+import satisfies from 'semver/functions/satisfies'
 import { fetch } from 'fetch-h2'
 import Cachely from 'cachely'
 
@@ -376,7 +376,7 @@ export default class PluginClerk {
 					for (const [name, acceptedRange] of Object.entries(list)) {
 						const suppliedVersion = dependencies[name]
 						if (suppliedVersion) {
-							if (semver.satisfies(suppliedVersion, acceptedRange) === false) {
+							if (satisfies(suppliedVersion, acceptedRange) === false) {
 								if (skippedVersions[pluginVersion] == null)
 									skippedVersions[pluginVersion] = {}
 								skippedVersions[pluginVersion][name] = acceptedRange

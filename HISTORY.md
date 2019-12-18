@@ -1,5 +1,10 @@
 # History
 
+## v4.0.0 2019 December 18
+
+-   If you are using CommonJS, you must now do `require('pluginclerk').default`
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
 ## v3.1.0 2019 December 10
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)

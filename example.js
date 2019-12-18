@@ -1,6 +1,6 @@
 'use strict'
 
-const clerk = require('./').create({
+const clerk = require('./').default.create({
 	// Required: The keyword that must be specified inside the plugin's package.json:keywords property
 	keyword: 'docpad-plugin',
 
