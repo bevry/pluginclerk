@@ -2,7 +2,7 @@
 
 // Import
 import satisfies from 'semver/functions/satisfies'
-import { fetch } from 'fetch-h2'
+import fetch from 'node-fetch'
 import Cachely from 'cachely'
 
 type Versions = { [name: string]: string | number }
@@ -234,13 +234,13 @@ export default class PluginClerk {
 		this.config = {
 			keyword: opts.keyword,
 			prefix: opts.prefix,
-			registryHostname: opts.registryHostname || 'https://registry.npmjs.org'
+			registryHostname: opts.registryHostname || 'https://registry.npmjs.org',
 		}
-		this.log = opts.log || function() {}
+		this.log = opts.log || function () {}
 		this.cachely = new Cachely({
 			retrieve: this.requestDatabase.bind(this),
 			duration: opts.cacheDuration,
-			log: opts.log
+			log: opts.log,
 		})
 	}
 
@@ -255,7 +255,7 @@ export default class PluginClerk {
 	 */
 	protected async requestDatabase({
 		database = {},
-		offset = 0
+		offset = 0,
 	}: { database?: RegistryPackageResults; offset?: number } = {}): Promise<
 		RegistryPackageResults
 	> {
@@ -276,7 +276,7 @@ export default class PluginClerk {
 
 			me.log('info', 'Fetching details for', data.objects.length, 'plugins')
 			await Promise.all(
-				data.objects.map(async function(entry) {
+				data.objects.map(async function (entry) {
 					const name = entry.package.name
 					let pluginData: RegistryPackageResult
 					try {
@@ -340,14 +340,14 @@ export default class PluginClerk {
 	protected getPlugin({
 		database,
 		name,
-		dependencies = {}
+		dependencies = {},
 	}: PluginOptions): PluginCompatibilityResult {
 		const pluginData = database[name]
 
 		if (pluginData == null) {
 			return {
 				message: `The requested plugin ${name} was not found in the plugin database`,
-				success: false
+				success: false,
 			}
 		}
 
@@ -409,7 +409,7 @@ export default class PluginClerk {
 			this.log('warn', 'The compatibility checks failed with error:', err.stack)
 			return {
 				message: 'The compatiblity checks failed',
-				success: false
+				success: false,
 			}
 		}
 
@@ -418,7 +418,7 @@ export default class PluginClerk {
 		if (!installVersion) {
 			return {
 				message: `Failed to find a compatible version of the plugin ${name}`,
-				success: false
+				success: false,
 			}
 		}
 
@@ -431,31 +431,31 @@ export default class PluginClerk {
 			skippedVersions,
 			latestVersion,
 			installVersion,
-			installPeers
+			installPeers,
 		}
 	}
 
 	/** Get the information for all the plugins in the database, with optional support for compatibility checks */
 	protected getPlugins({
 		database,
-		dependencies
+		dependencies,
 	}: PluginsOptions): PluginsResult {
 		const result: PluginsResult = {
 			success: true,
 			message: 'Successfully fetched the plugins',
-			plugins: {}
+			plugins: {},
 		}
 		for (const [pluginName, pluginData] of Object.entries(database)) {
 			const plugin: PluginEntry = {
 				description: pluginData.description,
 				homepage: pluginData.homepage,
-				version: pluginData['dist-tags'].latest
+				version: pluginData['dist-tags'].latest,
 			}
 			if (dependencies) {
 				plugin.compatibility = this.getPlugin({
 					name: pluginName,
 					dependencies,
-					database
+					database,
 				})
 			}
 			result.plugins[pluginName] = plugin

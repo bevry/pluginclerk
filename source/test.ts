@@ -10,13 +10,13 @@ const ACHIEVABLE_TOTAL_DOCPAD_PLUGINS = 100
 const DELAY_MILLISECONDS = 100
 
 // Task
-kava.suite('pluginclerk', function(suite) {
+kava.suite('pluginclerk', function (suite) {
 	let pluginClerk: PluginClerk,
 		totalPlugins: number,
 		totalPrefixedPlugins: number
 
-	suite('setup', function(suite, test) {
-		test('should fail to instantiate with no keyword', function() {
+	suite('setup', function (suite, test) {
+		test('should fail to instantiate with no keyword', function () {
 			let err = null
 			try {
 				pluginClerk = new PluginClerk({})
@@ -26,17 +26,17 @@ kava.suite('pluginclerk', function(suite) {
 			errorEqual(err, 'The plugin clerk requires a keyword to be specified')
 		})
 
-		test('should instantiate successfully with a keyword', function() {
+		test('should instantiate successfully with a keyword', function () {
 			pluginClerk = PluginClerk.create({
 				keyword: 'docpad-plugin',
-				log: console.log
+				log: console.log,
 			})
 		})
 
-		test('should fetch the database successfully', function(next) {
+		test('should fetch the database successfully', function (next) {
 			pluginClerk
 				.fetchDatabase()
-				.then(function(database) {
+				.then(function (database) {
 					totalPlugins = Object.keys(database).length
 					equal(
 						totalPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
@@ -49,19 +49,19 @@ kava.suite('pluginclerk', function(suite) {
 		})
 	})
 
-	suite('setup', function(suite, test) {
-		test('should instantiate successfully with a keyword and prefix', function() {
+	suite('setup', function (suite, test) {
+		test('should instantiate successfully with a keyword and prefix', function () {
 			pluginClerk = PluginClerk.create({
 				keyword: 'docpad-plugin',
 				prefix: 'docpad-plugin-',
-				log: console.log
+				log: console.log,
 			})
 		})
 
-		test('should fetch the database successfully', function(next) {
+		test('should fetch the database successfully', function (next) {
 			pluginClerk
 				.fetchDatabase()
-				.then(function(database) {
+				.then(function (database) {
 					totalPrefixedPlugins = Object.keys(database).length
 					equal(
 						totalPrefixedPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
@@ -78,8 +78,8 @@ kava.suite('pluginclerk', function(suite) {
 				.catch(next)
 		})
 
-		test('should fetch the database from cache', function(next) {
-			const timeout = setTimeout(function() {
+		test('should fetch the database from cache', function (next) {
+			const timeout = setTimeout(function () {
 				next(
 					new Error(
 						'Fetching the database took to long, it should have been from the cache'
@@ -88,7 +88,7 @@ kava.suite('pluginclerk', function(suite) {
 			}, DELAY_MILLISECONDS)
 			pluginClerk
 				.fetchDatabase()
-				.then(function(database) {
+				.then(function (database) {
 					clearTimeout(timeout)
 					equal(
 						Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
@@ -101,17 +101,17 @@ kava.suite('pluginclerk', function(suite) {
 		})
 	})
 
-	suite('plugin', function(suite, test) {
-		test('should handle older version correctly', function(next) {
+	suite('plugin', function (suite, test) {
+		test('should handle older version correctly', function (next) {
 			const opts = {
 				name: 'docpad-plugin-eco',
 				dependencies: {
-					docpad: '5.0.0'
-				}
+					docpad: '5.0.0',
+				},
 			}
 			pluginClerk
 				.fetchPlugin(opts)
-				.then(function(result) {
+				.then(function (result) {
 					console.log(inspect(result))
 					equal(result.success, true, 'success property to be correct')
 					equal(
@@ -141,16 +141,16 @@ kava.suite('pluginclerk', function(suite) {
 				.catch(next)
 		})
 
-		test('should handle recent version correctly', function(next) {
+		test('should handle recent version correctly', function (next) {
 			const opts = {
 				name: 'docpad-plugin-eco',
 				dependencies: {
-					docpad: '6.0.0'
-				}
+					docpad: '6.0.0',
+				},
 			}
 			pluginClerk
 				.fetchPlugin(opts)
-				.then(function(result) {
+				.then(function (result) {
 					console.log(inspect(result))
 					equal(result.success, true, 'success property to be correct')
 					equal(
@@ -170,13 +170,13 @@ kava.suite('pluginclerk', function(suite) {
 				.catch(next)
 		})
 
-		test('should handle latest version correctly', function(next) {
+		test('should handle latest version correctly', function (next) {
 			const opts = {
-				name: 'docpad-plugin-eco'
+				name: 'docpad-plugin-eco',
 			}
 			pluginClerk
 				.fetchPlugin(opts)
-				.then(function(result) {
+				.then(function (result) {
 					console.log(inspect(result))
 					equal(result.success, true, 'success property to be correct')
 					equal(
@@ -207,11 +207,11 @@ kava.suite('pluginclerk', function(suite) {
 		})
 	})
 
-	suite('plugins', function(suite, test) {
-		test('should fetch the latest plugins successfully', function(next) {
+	suite('plugins', function (suite, test) {
+		test('should fetch the latest plugins successfully', function (next) {
 			pluginClerk
 				.fetchPlugins({})
-				.then(function(results) {
+				.then(function (results) {
 					equal(results.success, true, 'success property to be correct')
 					equal(
 						results.message,
@@ -253,15 +253,15 @@ kava.suite('pluginclerk', function(suite) {
 				.catch(next)
 		})
 
-		test('should fetch the latest compatible plugins successfully', function(next) {
+		test('should fetch the latest compatible plugins successfully', function (next) {
 			const opts = {
 				dependencies: {
-					docpad: '5.0.0'
-				}
+					docpad: '5.0.0',
+				},
 			}
 			pluginClerk
 				.fetchPlugins(opts)
-				.then(function(results) {
+				.then(function (results) {
 					equal(results.success, true, 'success property to be correct')
 					equal(
 						results.message,

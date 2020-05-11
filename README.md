@@ -35,7 +35,7 @@ A clerk for retrieving compatible plugins from the npm database
 
 ## Usage
 
-
+[Complete API Documentation.](http://master.pluginclerk.bevry.surge.sh/docs/globals.html)
 
 ```javascript
 import PluginClerk from 'pluginclerk'
@@ -59,7 +59,7 @@ const clerk = new PluginClerk({
 
     // Optional: The registry hostname we should use for the API calls
     // Defaults to "https://registry.npmjs.org"
-    registryHostname: null
+    registryHostname: null,
 })
 
 // Fetch the latest version of a particular plugin
@@ -87,7 +87,7 @@ clerk
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
-        dependencies: { docpad: '6.78.0' }
+        dependencies: { docpad: '6.78.0' },
     })
     .then(console.log)
     .catch(console.error)
@@ -109,7 +109,7 @@ clerk
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
-        dependencies: { docpad: '5.0.0' }
+        dependencies: { docpad: '5.0.0' },
     })
     .then(console.log)
     .catch(console.error)
@@ -127,10 +127,7 @@ clerk
 } */
 
 // You can also fetch all plugins with some basic information
-clerk
-    .fetchPlugins({})
-    .then(console.log)
-    .catch(console.error)
+clerk.fetchPlugins({}).then(console.log).catch(console.error)
 
 /* {
     success: true,
@@ -163,12 +160,6 @@ clerk
     }
 } */
 ```
-
-
-
-
-
-[Complete API Documentation.](http://master.pluginclerk.bevry.surge.sh/docs/)
 
 <!-- INSTALL/ -->
 
@@ -218,7 +209,7 @@ clerk
 
 These amazing people are maintaining this project:
 
-<ul><li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/pluginclerk/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/pluginclerk">view contributions</a></li></ul>
+<ul><li><a href="https://github.com/balupton">Benjamin Lupton</a> — <a href="https://github.com/bevry/pluginclerk/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/pluginclerk">view contributions</a></li></ul>
 
 <h3>Sponsors</h3>
 
@@ -238,7 +229,7 @@ No sponsors yet! Will you be the first?
 
 These amazing people have contributed code to this project:
 
-<ul><li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/pluginclerk/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/pluginclerk">view contributions</a></li></ul>
+<ul><li><a href="https://github.com/balupton">Benjamin Lupton</a> — <a href="https://github.com/bevry/pluginclerk/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/pluginclerk">view contributions</a></li></ul>
 
 <a href="https://github.com/bevry/pluginclerk/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 

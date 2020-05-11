@@ -18,7 +18,7 @@ const clerk = require('./').default.create({
 
 	// Optional: The registry hostname we should use for the API calls
 	// Defaults to "https://registry.npmjs.org"
-	registryHostname: null
+	registryHostname: null,
 })
 
 // Fetch the latest version of a particular plugin
@@ -44,7 +44,7 @@ clerk
 clerk
 	.fetchPlugin({
 		name: 'docpad-plugin-eco',
-		dependencies: { docpad: '6.78.0' }
+		dependencies: { docpad: '6.78.0' },
 	})
 	.then(console.log)
 	.catch(console.error)
@@ -81,10 +81,7 @@ clerk
 } */
 
 // You can also fetch all plugins with some basic information
-clerk
-	.fetchPlugins({})
-	.then(console.log)
-	.catch(console.error)
+clerk.fetchPlugins({}).then(console.log).catch(console.error)
 
 /* {
 	success: true,
