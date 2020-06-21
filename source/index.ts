@@ -2,7 +2,7 @@
 
 // Import
 import satisfies from 'semver/functions/satisfies'
-import fetch from 'node-fetch'
+import fetch from 'cross-fetch'
 import Cachely from 'cachely'
 
 type Versions = { [name: string]: string | number }
