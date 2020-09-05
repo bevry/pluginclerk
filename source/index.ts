@@ -1,9 +1,12 @@
 'use strict'
 
 // Import
-import satisfies from 'semver/functions/satisfies'
 import fetch from 'cross-fetch'
 import Cachely from 'cachely'
+
+// Compat until there is a better solution
+import semver from 'semver'
+const { satisfies } = semver
 
 type Versions = { [name: string]: string | number }
 type Ranges = { [name: string]: string }
