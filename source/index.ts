@@ -1,5 +1,3 @@
-'use strict'
-
 // Import
 import fetch from 'cross-fetch'
 import Cachely from 'cachely'
@@ -137,6 +135,8 @@ interface RegistryPackageResults {
 }
 
 interface FetchPluginsOptions {
+	/** specify the dependencies that you require inside the plugin's `package.json` engines or peerDependencies */
+	requirements?: Versions
 	/** specify the `package.json` dependencies that you are using to ensure compatibility */
 	dependencies?: Versions
 }
@@ -144,12 +144,9 @@ interface PluginsOptions extends FetchPluginsOptions {
 	/** the database result */
 	database: RegistryPackageResults
 }
-
-interface FetchPluginOptions {
+interface FetchPluginOptions extends FetchPluginsOptions {
 	/** the name of the package to process the data for */
 	name: string
-	/** specify the `package.json` dependencies that you are using to ensure compatibility */
-	dependencies?: Versions
 }
 interface PluginOptions extends FetchPluginOptions {
 	/** the database result */
@@ -343,6 +340,7 @@ export default class PluginClerk {
 	protected getPlugin({
 		database,
 		name,
+		requirements = {},
 		dependencies = {},
 	}: PluginOptions): PluginCompatibilityResult {
 		const pluginData = database[name]
@@ -371,32 +369,53 @@ export default class PluginClerk {
 				pluginVersionsData
 			).reverse()
 			for (const pluginVersion of pluginVersionsKeysLatestFirst) {
+				// prepare
 				const pluginVersionData = pluginVersionsData[pluginVersion]
 				const pluginVersionMissingPeers: string[] = []
 
-				/* eslint no-inner-declarations:0 */
-				function compat(list: Versions, type: string) {
-					for (const [name, acceptedRange] of Object.entries(list)) {
-						const suppliedVersion = dependencies[name]
-						if (suppliedVersion) {
-							if (satisfies(suppliedVersion, acceptedRange) === false) {
-								if (skippedVersions[pluginVersion] == null)
-									skippedVersions[pluginVersion] = {}
-								skippedVersions[pluginVersion][name] = acceptedRange
-							}
-						} else if (type !== 'engines') {
-							pluginVersionMissingPeers.push(name)
-						}
+				// cycle through the external dependencies to check if the requirements exist
+				const existingDependencies = Object.assign(
+					{},
+					requirements,
+					dependencies
+				)
+				const requiredDependencies = Object.assign(
+					{},
+					pluginVersionData.engines || {},
+					pluginVersionData.peerDependencies || {}
+				)
+
+				// ensure all required dependencies exist
+				for (const [name, suppliedVersion] of Object.entries(requirements)) {
+					const acceptedRange = requiredDependencies[name]
+					if (
+						!acceptedRange ||
+						satisfies(suppliedVersion, acceptedRange) === false
+					) {
+						// incompatibility
+						if (skippedVersions[pluginVersion] == null)
+							skippedVersions[pluginVersion] = {}
+						skippedVersions[pluginVersion][name] =
+							acceptedRange || suppliedVersion
 					}
 				}
 
-				// cycle through the versions of the engines
-				// to check if the engine dependencies are satisfied by the installed dependencies
-				compat(pluginVersionData.engines || {}, 'engines')
-
-				// cycle through the versions peer dependencies
-				// to check if the peer dependencies are satisfied by the installed dependencies
-				compat(pluginVersionData.peerDependencies || {}, 'dependencies')
+				// ensure all peer dependencies exist
+				for (const [name, acceptedRange] of Object.entries(
+					pluginVersionData.peerDependencies || {}
+				)) {
+					const suppliedVersion = existingDependencies[name]
+					if (suppliedVersion) {
+						if (satisfies(suppliedVersion, acceptedRange) === false) {
+							// incompatibility
+							if (skippedVersions[pluginVersion] == null)
+								skippedVersions[pluginVersion] = {}
+							skippedVersions[pluginVersion][name] = acceptedRange
+						}
+					} else {
+						pluginVersionMissingPeers.push(name)
+					}
+				}
 
 				// check if this version is to be skipped
 				if (skippedVersions[pluginVersion]) {
@@ -441,6 +460,7 @@ export default class PluginClerk {
 	/** Get the information for all the plugins in the database, with optional support for compatibility checks */
 	protected getPlugins({
 		database,
+		requirements,
 		dependencies,
 	}: PluginsOptions): PluginsResult {
 		const result: PluginsResult = {
@@ -454,9 +474,10 @@ export default class PluginClerk {
 				homepage: pluginData.homepage,
 				version: pluginData['dist-tags'].latest,
 			}
-			if (dependencies) {
+			if (dependencies || requirements) {
 				plugin.compatibility = this.getPlugin({
 					name: pluginName,
+					requirements,
 					dependencies,
 					database,
 				})

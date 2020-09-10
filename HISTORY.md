@@ -1,5 +1,11 @@
 # History
 
+## v4.13.0 2020 September 10
+
+-   Add `requirements` option which plugins must meet
+-   Tests no longer need to be adapted for each successive DocPad release
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
 ## v4.12.0 2020 August 4
 
 -   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)

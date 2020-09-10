@@ -87,7 +87,7 @@ clerk
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
-        dependencies: { docpad: '6.78.0' },
+        requirements: { docpad: '6.78.0' },
     })
     .then(console.log)
     .catch(console.error)
@@ -109,7 +109,7 @@ clerk
 clerk
     .fetchPlugin({
         name: 'docpad-plugin-eco',
-        dependencies: { docpad: '5.0.0' },
+        requirements: { docpad: '5.0.0' },
     })
     .then(console.log)
     .catch(console.error)
@@ -143,7 +143,7 @@ clerk.fetchPlugins({}).then(console.log).catch(console.error)
 
 // You can also fetch all plugins with their compatibility information
 clerk
-    .fetchPlugins({ dependencies: { docpad: '5.0.0' } })
+    .fetchPlugins({ requirements: { docpad: '5.0.0' } })
     .then(console.log)
     .catch(console.error)
 
@@ -179,7 +179,7 @@ clerk
 <ul><li><code>pluginclerk/source/index.ts</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> source code with <a href="https://babeljs.io/docs/learn-es2015/#modules" title="ECMAScript Modules">Import</a> for modules</li>
 <li><code>pluginclerk</code> aliases <code>pluginclerk/edition-esnext/index.js</code></li>
 <li><code>pluginclerk/edition-esnext/index.js</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> compiled against <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> 10 || 12 || 13 || 14 with <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a> for modules</li>
-<li><code>pluginclerk/edition-node-esm/index.js</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> compiled against <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> with <a href="https://babeljs.io/docs/learn-es2015/#modules" title="ECMAScript Modules">Import</a> for modules</li></ul>
+<li><code>pluginclerk/edition-esnext-esm/index.js</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> compiled against <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> 12 || 13 || 14 with <a href="https://babeljs.io/docs/learn-es2015/#modules" title="ECMAScript Modules">Import</a> for modules</li></ul>
 
 <!-- /INSTALL -->
 

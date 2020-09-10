@@ -4,6 +4,7 @@
 import kava from 'kava'
 import { equal, inspect, deepEqual, errorEqual } from 'assert-helpers'
 import PluginClerk from './index.js'
+import fetch from 'node-fetch'
 
 // Prepare
 const ACHIEVABLE_TOTAL_DOCPAD_PLUGINS = 100
@@ -13,9 +14,18 @@ const DELAY_MILLISECONDS = 100
 kava.suite('pluginclerk', function (suite) {
 	let pluginClerk: PluginClerk,
 		totalPlugins: number,
-		totalPrefixedPlugins: number
+		totalPrefixedPlugins: number,
+		latestDocPadVersion: number
 
 	suite('setup', function (suite, test) {
+		test('should fetch latest docpad version for later', function (done) {
+			fetch('https://unpkg.com/docpad/package.json', {})
+				.then((res) => res.json())
+				.then((data) => (latestDocPadVersion = data.version))
+				.then(() => setImmediate(done))
+				.catch(done)
+		})
+
 		test('should fail to instantiate with no keyword', function () {
 			let err = null
 			try {
@@ -105,7 +115,7 @@ kava.suite('pluginclerk', function (suite) {
 		test('should handle older version correctly', function (next) {
 			const opts = {
 				name: 'docpad-plugin-eco',
-				dependencies: {
+				requirements: {
 					docpad: '5.0.0',
 				},
 			}
@@ -144,8 +154,8 @@ kava.suite('pluginclerk', function (suite) {
 		test('should handle recent version correctly', function (next) {
 			const opts = {
 				name: 'docpad-plugin-eco',
-				dependencies: {
-					docpad: '6.0.0',
+				requirements: {
+					docpad: latestDocPadVersion,
 				},
 			}
 			pluginClerk
@@ -242,7 +252,6 @@ kava.suite('pluginclerk', function (suite) {
 						true,
 						'version property should exist'
 					)
-
 					equal(
 						result.compatibility != null,
 						false,
@@ -255,7 +264,7 @@ kava.suite('pluginclerk', function (suite) {
 
 		test('should fetch the latest compatible plugins successfully', function (next) {
 			const opts = {
-				dependencies: {
+				requirements: {
 					docpad: '5.0.0',
 				},
 			}
