@@ -1,5 +1,13 @@
 # History
 
+## v5.0.0 2023 November 1
+
+-   Updated dependencies, [base files](https://github.com/bevry/base), and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+-   Updated license from [`MIT`](http://spdx.org/licenses/MIT.html) to [`Artistic-2.0`](http://spdx.org/licenses/Artistic-2.0.html)
+-   Minimum required node version changed from `node: >=10` to `node: >=18` to keep up with mandatory ecosystem changes
+-   Now uses the [Node.js `fetch` builtin](https://nodejs.org/api/globals.html#fetch)
+-   Now skips pre-release versions, such as `docpad-plugin-eco@2.8.0-next.1606022411.1ad0d24d5425e9b8b4ba6a37099d974e6f5b12ad`
+
 ## v4.13.0 2020 September 10
 
 -   Add `requirements` option which plugins must meet

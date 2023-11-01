@@ -1,5 +1,4 @@
 // Import
-import fetch from 'cross-fetch'
 import Cachely from 'cachely'
 
 // Compat until there is a better solution
@@ -228,7 +227,7 @@ export default class PluginClerk {
 	constructor(opts: PluginClerkOptions) {
 		if (!opts || !opts.keyword) {
 			throw new Error(
-				'The plugin clerk requires a keyword to be specified, please refer to the API specification'
+				'The plugin clerk requires a keyword to be specified, please refer to the API specification',
 			)
 		}
 		this.config = {
@@ -256,9 +255,10 @@ export default class PluginClerk {
 	protected async requestDatabase({
 		database = {},
 		offset = 0,
-	}: { database?: RegistryPackageResults; offset?: number } = {}): Promise<
-		RegistryPackageResults
-	> {
+	}: {
+		database?: RegistryPackageResults
+		offset?: number
+	} = {}): Promise<RegistryPackageResults> {
 		const me = this
 		const nameRegex = /[^a-z0-9]/
 		const url = `${me.config.registryHostname}/-/v1/search?text=keywords:${me.config.keyword}&size=250&from=${offset}`
@@ -271,7 +271,7 @@ export default class PluginClerk {
 			data = await response.json()
 			if (!data || !data.objects) {
 				me.log('error', 'Fetched data from', url, 'had no objects', data)
-				return Promise.reject(new Error('Feteched data had no objects'))
+				return Promise.reject(new Error('Fetched data had no objects'))
 			}
 
 			me.log('info', 'Fetching details for', data.objects.length, 'plugins')
@@ -281,17 +281,17 @@ export default class PluginClerk {
 					let pluginData: RegistryPackageResult
 					try {
 						const response = await fetch(
-							`${me.config.registryHostname}/${name}`
+							`${me.config.registryHostname}/${name}`,
 						)
 						pluginData = await response.json()
-					} catch (err) {
+					} catch (err: any) {
 						return Promise.reject(err)
 					}
 					if (name !== pluginData.name) {
 						return Promise.reject(
 							new Error(
-								'name result from search and from package did not match'
-							)
+								'name result from search and from package did not match',
+							),
 						)
 					}
 					if (me.config.prefix) {
@@ -300,7 +300,7 @@ export default class PluginClerk {
 							// invalid plugin
 							me.log(
 								'warn',
-								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`
+								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`,
 							)
 							return Promise.resolve()
 						}
@@ -308,17 +308,17 @@ export default class PluginClerk {
 					database[name] = pluginData
 					me.log(
 						'info',
-						`Plugin ${name} was successfully added to the database.`
+						`Plugin ${name} was successfully added to the database.`,
 					)
 					return Promise.resolve()
-				})
+				}),
 			)
-		} catch (err) {
+		} catch (err: any) {
 			me.log('error', 'Fetching database content failed', err)
 			return Promise.reject(err)
 		}
 
-		// this could be optimsied further
+		// this could be optimized further
 		// option 1: fetch all the pages first, then combine them, then fetch package data
 		// option 2: calculate how many pages are needed, then fetch them all at once (only possible after first page is retrieved, as we need the total)
 		// option 3: do both of the above
@@ -327,7 +327,7 @@ export default class PluginClerk {
 		if (subtotal + offset !== Number(data.total)) {
 			me.log(
 				'info',
-				'Fetched a portion of the database content, grabbing the rest'
+				'Fetched a portion of the database content, grabbing the rest',
 			)
 			return this.requestDatabase({ database, offset: subtotal })
 		}
@@ -365,10 +365,12 @@ export default class PluginClerk {
 			// cycle through the plugins versions
 			// to discover the most recent version that satisfies installed dependencies
 			const pluginVersionsData = pluginData.versions
-			const pluginVersionsKeysLatestFirst = Object.keys(
-				pluginVersionsData
-			).reverse()
+			const pluginVersionsKeysLatestFirst =
+				Object.keys(pluginVersionsData).reverse()
 			for (const pluginVersion of pluginVersionsKeysLatestFirst) {
+				// skip pre-release versions
+				if (pluginVersion.includes('-')) continue
+
 				// prepare
 				const pluginVersionData = pluginVersionsData[pluginVersion]
 				const pluginVersionMissingPeers: string[] = []
@@ -377,12 +379,12 @@ export default class PluginClerk {
 				const existingDependencies = Object.assign(
 					{},
 					requirements,
-					dependencies
+					dependencies,
 				)
 				const requiredDependencies = Object.assign(
 					{},
 					pluginVersionData.engines || {},
-					pluginVersionData.peerDependencies || {}
+					pluginVersionData.peerDependencies || {},
 				)
 
 				// ensure all required dependencies exist
@@ -390,7 +392,8 @@ export default class PluginClerk {
 					const acceptedRange = requiredDependencies[name]
 					if (
 						!acceptedRange ||
-						satisfies(suppliedVersion, acceptedRange) === false
+						satisfies(suppliedVersion as string, acceptedRange as string) ===
+							false
 					) {
 						// incompatibility
 						if (skippedVersions[pluginVersion] == null)
@@ -402,11 +405,14 @@ export default class PluginClerk {
 
 				// ensure all peer dependencies exist
 				for (const [name, acceptedRange] of Object.entries(
-					pluginVersionData.peerDependencies || {}
+					pluginVersionData.peerDependencies || {},
 				)) {
 					const suppliedVersion = existingDependencies[name]
 					if (suppliedVersion) {
-						if (satisfies(suppliedVersion, acceptedRange) === false) {
+						if (
+							satisfies(suppliedVersion as string, acceptedRange as string) ===
+							false
+						) {
 							// incompatibility
 							if (skippedVersions[pluginVersion] == null)
 								skippedVersions[pluginVersion] = {}
@@ -427,10 +433,10 @@ export default class PluginClerk {
 				installPeers = pluginVersionMissingPeers
 				break
 			}
-		} catch (err) {
+		} catch (err: any) {
 			this.log('warn', 'The compatibility checks failed with error:', err.stack)
 			return {
-				message: 'The compatiblity checks failed',
+				message: 'The compatibility checks failed',
 				success: false,
 			}
 		}
@@ -492,12 +498,12 @@ export default class PluginClerk {
 	 * @param opts - forwarded to {@link PluginClerk#getPlugin}, with `database` prefilled
 	 */
 	public async fetchPlugin(
-		opts: FetchPluginOptions
+		opts: FetchPluginOptions,
 	): Promise<PluginCompatibilityResult> {
 		let database: RegistryPackageResults
 		try {
 			database = await this.fetchDatabase()
-		} catch (err) {
+		} catch (err: any) {
 			return Promise.reject(err)
 		}
 		return this.getPlugin({ database, ...opts })
@@ -511,7 +517,7 @@ export default class PluginClerk {
 		let database: RegistryPackageResults
 		try {
 			database = await this.fetchDatabase()
-		} catch (err) {
+		} catch (err: any) {
 			return Promise.reject(err)
 		}
 		return this.getPlugins({ database, ...opts })

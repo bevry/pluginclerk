@@ -4,7 +4,6 @@
 import kava from 'kava'
 import { equal, inspect, deepEqual, errorEqual } from 'assert-helpers'
 import PluginClerk from './index.js'
-import fetch from 'node-fetch'
 
 // Prepare
 const ACHIEVABLE_TOTAL_DOCPAD_PLUGINS = 100
@@ -27,10 +26,10 @@ kava.suite('pluginclerk', function (suite) {
 		})
 
 		test('should fail to instantiate with no keyword', function () {
-			let err = null
+			let err: any = null
 			try {
 				pluginClerk = new PluginClerk({})
-			} catch (_err) {
+			} catch (_err: any) {
 				err = _err
 			}
 			errorEqual(err, 'The plugin clerk requires a keyword to be specified')
@@ -51,7 +50,7 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						totalPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
 						true,
-						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins, it fetched ${totalPlugins}`
+						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins, it fetched ${totalPlugins}`,
 					)
 					next()
 				})
@@ -76,12 +75,12 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						totalPrefixedPlugins > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
 						true,
-						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} prefixed plugins, it fetched ${totalPrefixedPlugins}`
+						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} prefixed plugins, it fetched ${totalPrefixedPlugins}`,
 					)
 					equal(
 						totalPrefixedPlugins < totalPlugins,
 						true,
-						`prefixed plugins ${totalPrefixedPlugins} should be less than the total plugins ${totalPlugins}`
+						`prefixed plugins ${totalPrefixedPlugins} should be less than the total plugins ${totalPlugins}`,
 					)
 					next()
 				})
@@ -92,8 +91,8 @@ kava.suite('pluginclerk', function (suite) {
 			const timeout = setTimeout(function () {
 				next(
 					new Error(
-						'Fetching the database took to long, it should have been from the cache'
-					)
+						'Fetching the database took to long, it should have been from the cache',
+					),
 				)
 			}, DELAY_MILLISECONDS)
 			pluginClerk
@@ -103,7 +102,7 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						Object.keys(database).length > ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
 						true,
-						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`
+						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`,
 					)
 					next()
 				})
@@ -127,23 +126,23 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						result.message,
 						'Successfully fetched an older and compatible version of the plugin docpad-plugin-eco',
-						'message property to be correct'
+						'message property to be correct',
 					)
 					if (result.success) {
 						equal(
 							Object.keys(result.skippedVersions).length !== 0,
 							true,
-							'there were older versions that were skipped'
+							'there were older versions that were skipped',
 						)
 						equal(
 							result.latestVersion !== result.installVersion,
 							true,
-							"the old version isn't the latest version"
+							"the old version isn't the latest version",
 						)
 						deepEqual(
 							result.installPeers,
 							[],
-							'no install peers for this old version as it used engines instead of peerDependencies'
+							'no install peers for this old version as it used engines instead of peerDependencies',
 						)
 					}
 					next()
@@ -166,13 +165,13 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						result.message,
 						'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
-						'message property to be correct'
+						'message property to be correct',
 					)
 					if (result.success) {
 						deepEqual(
 							result.installPeers,
 							[],
-							'no install peers for this version as we supplied it'
+							'no install peers for this version as we supplied it',
 						)
 					}
 					next()
@@ -192,23 +191,23 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						result.message,
 						'Successfully fetched the latest and compatible version of the plugin docpad-plugin-eco',
-						'message property to be correct'
+						'message property to be correct',
 					)
 					if (result.success) {
 						equal(
 							Object.keys(result.skippedVersions).length === 0,
 							true,
-							'the install/latest version should have no skipped dependencies'
+							'the install/latest version should have no skipped dependencies',
 						)
 						equal(
 							result.latestVersion === result.installVersion,
 							true,
-							'the install version should be the latest version'
+							'the install version should be the latest version',
 						)
 						deepEqual(
 							result.installPeers,
 							['docpad'],
-							'we should need to install the peer dependency docpad, as it was not supplied as an existing dependency'
+							'we should need to install the peer dependency docpad, as it was not supplied as an existing dependency',
 						)
 					}
 					next()
@@ -226,36 +225,36 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						results.message,
 						'Successfully fetched the plugins',
-						'message property to be correct'
+						'message property to be correct',
 					)
 
 					equal(
 						Object.keys(results.plugins).length >
 							ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
 						true,
-						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`
+						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`,
 					)
 					const result = results.plugins['docpad-plugin-eco']
 					console.log(inspect(result))
 					equal(
 						result.description.length !== 0,
 						true,
-						'description property should exist'
+						'description property should exist',
 					)
 					equal(
 						result.homepage.length !== 0,
 						true,
-						'homepage property should exist'
+						'homepage property should exist',
 					)
 					equal(
 						result.version.length !== 0,
 						true,
-						'version property should exist'
+						'version property should exist',
 					)
 					equal(
 						result.compatibility != null,
 						false,
-						'compatibility property should not exist'
+						'compatibility property should not exist',
 					)
 					next()
 				})
@@ -275,37 +274,37 @@ kava.suite('pluginclerk', function (suite) {
 					equal(
 						results.message,
 						'Successfully fetched the plugins',
-						'message property to be correct'
+						'message property to be correct',
 					)
 
 					equal(
 						Object.keys(results.plugins).length >
 							ACHIEVABLE_TOTAL_DOCPAD_PLUGINS,
 						true,
-						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`
+						`should have fetched over ${ACHIEVABLE_TOTAL_DOCPAD_PLUGINS} plugins`,
 					)
 					const result = results.plugins['docpad-plugin-eco']
 					console.log(inspect(result))
 					equal(
 						result.description.length !== 0,
 						true,
-						'description property should exist'
+						'description property should exist',
 					)
 					equal(
 						result.homepage.length !== 0,
 						true,
-						'homepage property should exist'
+						'homepage property should exist',
 					)
 					equal(
 						result.version.length !== 0,
 						true,
-						'version property should exist'
+						'version property should exist',
 					)
 
 					equal(
 						result.compatibility != null,
 						true,
-						'compatibility property should exist'
+						'compatibility property should exist',
 					)
 					next()
 				})
