@@ -227,7 +227,7 @@ export default class PluginClerk {
 	constructor(opts: PluginClerkOptions) {
 		if (!opts || !opts.keyword) {
 			throw new Error(
-				'The plugin clerk requires a keyword to be specified, please refer to the API specification',
+				'The plugin clerk requires a keyword to be specified, please refer to the API specification'
 			)
 		}
 		this.config = {
@@ -281,7 +281,7 @@ export default class PluginClerk {
 					let pluginData: RegistryPackageResult
 					try {
 						const response = await fetch(
-							`${me.config.registryHostname}/${name}`,
+							`${me.config.registryHostname}/${name}`
 						)
 						pluginData = await response.json()
 					} catch (err: any) {
@@ -290,8 +290,8 @@ export default class PluginClerk {
 					if (name !== pluginData.name) {
 						return Promise.reject(
 							new Error(
-								'name result from search and from package did not match',
-							),
+								'name result from search and from package did not match'
+							)
 						)
 					}
 					if (me.config.prefix) {
@@ -300,7 +300,7 @@ export default class PluginClerk {
 							// invalid plugin
 							me.log(
 								'warn',
-								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`,
+								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`
 							)
 							return Promise.resolve()
 						}
@@ -308,10 +308,10 @@ export default class PluginClerk {
 					database[name] = pluginData
 					me.log(
 						'info',
-						`Plugin ${name} was successfully added to the database.`,
+						`Plugin ${name} was successfully added to the database.`
 					)
 					return Promise.resolve()
-				}),
+				})
 			)
 		} catch (err: any) {
 			me.log('error', 'Fetching database content failed', err)
@@ -327,7 +327,7 @@ export default class PluginClerk {
 		if (subtotal + offset !== Number(data.total)) {
 			me.log(
 				'info',
-				'Fetched a portion of the database content, grabbing the rest',
+				'Fetched a portion of the database content, grabbing the rest'
 			)
 			return this.requestDatabase({ database, offset: subtotal })
 		}
@@ -379,12 +379,12 @@ export default class PluginClerk {
 				const existingDependencies = Object.assign(
 					{},
 					requirements,
-					dependencies,
+					dependencies
 				)
 				const requiredDependencies = Object.assign(
 					{},
 					pluginVersionData.engines || {},
-					pluginVersionData.peerDependencies || {},
+					pluginVersionData.peerDependencies || {}
 				)
 
 				// ensure all required dependencies exist
@@ -405,7 +405,7 @@ export default class PluginClerk {
 
 				// ensure all peer dependencies exist
 				for (const [name, acceptedRange] of Object.entries(
-					pluginVersionData.peerDependencies || {},
+					pluginVersionData.peerDependencies || {}
 				)) {
 					const suppliedVersion = existingDependencies[name]
 					if (suppliedVersion) {
@@ -498,7 +498,7 @@ export default class PluginClerk {
 	 * @param opts - forwarded to {@link PluginClerk#getPlugin}, with `database` prefilled
 	 */
 	public async fetchPlugin(
-		opts: FetchPluginOptions,
+		opts: FetchPluginOptions
 	): Promise<PluginCompatibilityResult> {
 		let database: RegistryPackageResults
 		try {
