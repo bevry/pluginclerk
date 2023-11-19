@@ -1,10 +1,14 @@
 {
   "name": "pluginclerk",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "A clerk for retrieving compatible plugins from the npm database",
   "homepage": "https://github.com/bevry/pluginclerk",
   "license": "Artistic-2.0",
   "keywords": [
+    "deno",
+    "deno-edition",
+    "deno-entry",
+    "denoland",
     "dependencies",
     "es2022",
     "export-default",
@@ -27,18 +31,19 @@
       "githubsponsors",
       "thanksdev",
       "patreon",
-      "flattr",
       "liberapay",
       "buymeacoffee",
       "opencollective",
       "crypto",
       "paypal",
-      "wishlist"
+      "---",
+      "discord",
+      "twitch"
     ],
     "config": {
       "githubWorkflow": "bevry",
       "githubSponsorsUsername": "balupton",
-      "thanksdevGithubUsername": "balupton",
+      "thanksdevGithubUsername": "bevry",
       "buymeacoffeeUsername": "balupton",
       "cryptoURL": "https://bevry.me/crypto",
       "flattrUsername": "balupton",
@@ -47,6 +52,9 @@
       "patreonUsername": "bevry",
       "paypalURL": "https://bevry.me/paypal",
       "wishlistURL": "https://bevry.me/wishlist",
+      "discordServerID": "1147436445783560193",
+      "discordServerInvite": "nQuXddV7VP",
+      "twitchUsername": "balupton",
       "githubUsername": "bevry",
       "githubRepository": "pluginclerk",
       "githubSlug": "bevry/pluginclerk",
@@ -112,6 +120,20 @@
         "node": "18 || 20 || 21",
         "browsers": false
       }
+    },
+    {
+      "description": "TypeScript source code made to be compatible with Deno",
+      "directory": "edition-deno",
+      "entry": "index.ts",
+      "tags": [
+        "typescript",
+        "import",
+        "deno"
+      ],
+      "engines": {
+        "deno": true,
+        "browsers": false
+      }
     }
   ],
   "types": "./compiled-types/",
@@ -123,31 +145,35 @@
       "require": "./edition-es2022/index.js"
     }
   },
+  "deno": "edition-deno/index.ts",
   "dependencies": {
+    "@bevry/wait": "^2.1.0",
     "cachely": "^6.3.0",
-    "semver": "^7.5.4"
+    "version-range": "^4.2.0"
   },
   "devDependencies": {
     "@bevry/update-contributors": "^1.23.0",
-    "@types/node": "^20.9.0",
+    "@types/node": "^20.9.2",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "assert-helpers": "^11.4.0",
-    "eslint": "^8.53.0",
-    "eslint-config-bevry": "^4.0.0",
+    "eslint": "^8.54.0",
+    "eslint-config-bevry": "^5.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "kava": "^7.2.0",
+    "make-deno-edition": "^1.3.0",
     "prettier": "^3.1.0",
-    "projectz": "^3.0.0",
+    "projectz": "^3.2.0",
     "surge": "^0.23.1",
     "typedoc": "^0.25.3",
     "typescript": "5.2.2",
-    "valid-directory": "^4.2.0"
+    "valid-directory": "^4.4.0"
   },
   "scripts": {
     "our:clean": "rm -rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",
-    "our:compile": "npm run our:compile:edition-es2022 && npm run our:compile:edition-es2022-esm && npm run our:compile:types",
+    "our:compile": "npm run our:compile:deno && npm run our:compile:edition-es2022 && npm run our:compile:edition-es2022-esm && npm run our:compile:types",
+    "our:compile:deno": "make-deno-edition --attempt",
     "our:compile:edition-es2022": "tsc --module commonjs --target ES2022 --outDir ./edition-es2022 --project tsconfig.json && ( test ! -d edition-es2022/source || ( mv edition-es2022/source edition-temp && rm -rf edition-es2022 && mv edition-temp edition-es2022 ) ) && printf '%s' '{\"type\": \"commonjs\"}' > edition-es2022/package.json",
     "our:compile:edition-es2022-esm": "tsc --module ESNext --target ES2022 --outDir ./edition-es2022-esm --project tsconfig.json && ( test ! -d edition-es2022-esm/source || ( mv edition-es2022-esm/source edition-temp && rm -rf edition-es2022-esm && mv edition-temp edition-es2022-esm ) ) && printf '%s' '{\"type\": \"module\"}' > edition-es2022-esm/package.json",
     "our:compile:types": "tsc --project tsconfig.json --emitDeclarationOnly --declaration --declarationMap --declarationDir ./compiled-types && ( test ! -d compiled-types/source || ( mv compiled-types/source edition-temp && rm -rf compiled-types && mv edition-temp compiled-types ) )",
@@ -180,6 +206,6 @@
   "prettier": {
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "es5"
+    "trailingComma": "all"
   }
 }

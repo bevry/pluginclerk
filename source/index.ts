@@ -1,9 +1,7 @@
 // Import
 import Cachely from 'cachely'
-
-// Compat until there is a better solution
-import semver from 'semver'
-const { satisfies } = semver
+import versionRange from 'version-range'
+import wait from '@bevry/wait'
 
 type Versions = { [name: string]: string | number }
 type Ranges = { [name: string]: string }
@@ -227,7 +225,7 @@ export default class PluginClerk {
 	constructor(opts: PluginClerkOptions) {
 		if (!opts || !opts.keyword) {
 			throw new Error(
-				'The plugin clerk requires a keyword to be specified, please refer to the API specification'
+				'The plugin clerk requires a keyword to be specified, please refer to the API specification',
 			)
 		}
 		this.config = {
@@ -267,7 +265,19 @@ export default class PluginClerk {
 		me.log('notice', 'Fetching database content')
 
 		try {
-			const response = await fetch(url)
+			// fetch response, supporting retry on timeouts
+			let response
+			while (true) {
+				try {
+					response = await fetch(url)
+				} catch (err) {}
+				if (response && response.ok) {
+					break
+				} else {
+					// wait a random duration up to a minute before trying again
+					await wait(Math.random() * 60000)
+				}
+			}
 			data = await response.json()
 			if (!data || !data.objects) {
 				me.log('error', 'Fetched data from', url, 'had no objects', data)
@@ -281,7 +291,7 @@ export default class PluginClerk {
 					let pluginData: RegistryPackageResult
 					try {
 						const response = await fetch(
-							`${me.config.registryHostname}/${name}`
+							`${me.config.registryHostname}/${name}`,
 						)
 						pluginData = await response.json()
 					} catch (err: any) {
@@ -290,8 +300,8 @@ export default class PluginClerk {
 					if (name !== pluginData.name) {
 						return Promise.reject(
 							new Error(
-								'name result from search and from package did not match'
-							)
+								'name result from search and from package did not match',
+							),
 						)
 					}
 					if (me.config.prefix) {
@@ -300,7 +310,7 @@ export default class PluginClerk {
 							// invalid plugin
 							me.log(
 								'warn',
-								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`
+								`Plugin ${name} will be ignored as it has an invalid name, must be prefixed with: ${me.config.prefix}`,
 							)
 							return Promise.resolve()
 						}
@@ -308,10 +318,10 @@ export default class PluginClerk {
 					database[name] = pluginData
 					me.log(
 						'info',
-						`Plugin ${name} was successfully added to the database.`
+						`Plugin ${name} was successfully added to the database.`,
 					)
 					return Promise.resolve()
-				})
+				}),
 			)
 		} catch (err: any) {
 			me.log('error', 'Fetching database content failed', err)
@@ -327,7 +337,7 @@ export default class PluginClerk {
 		if (subtotal + offset !== Number(data.total)) {
 			me.log(
 				'info',
-				'Fetched a portion of the database content, grabbing the rest'
+				'Fetched a portion of the database content, grabbing the rest',
 			)
 			return this.requestDatabase({ database, offset: subtotal })
 		}
@@ -379,12 +389,12 @@ export default class PluginClerk {
 				const existingDependencies = Object.assign(
 					{},
 					requirements,
-					dependencies
+					dependencies,
 				)
 				const requiredDependencies = Object.assign(
 					{},
 					pluginVersionData.engines || {},
-					pluginVersionData.peerDependencies || {}
+					pluginVersionData.peerDependencies || {},
 				)
 
 				// ensure all required dependencies exist
@@ -392,7 +402,7 @@ export default class PluginClerk {
 					const acceptedRange = requiredDependencies[name]
 					if (
 						!acceptedRange ||
-						satisfies(suppliedVersion as string, acceptedRange as string) ===
+						versionRange(suppliedVersion as string, acceptedRange as string) ===
 							false
 					) {
 						// incompatibility
@@ -405,13 +415,15 @@ export default class PluginClerk {
 
 				// ensure all peer dependencies exist
 				for (const [name, acceptedRange] of Object.entries(
-					pluginVersionData.peerDependencies || {}
+					pluginVersionData.peerDependencies || {},
 				)) {
 					const suppliedVersion = existingDependencies[name]
 					if (suppliedVersion) {
 						if (
-							satisfies(suppliedVersion as string, acceptedRange as string) ===
-							false
+							versionRange(
+								suppliedVersion as string,
+								acceptedRange as string,
+							) === false
 						) {
 							// incompatibility
 							if (skippedVersions[pluginVersion] == null)
@@ -498,7 +510,7 @@ export default class PluginClerk {
 	 * @param opts - forwarded to {@link PluginClerk#getPlugin}, with `database` prefilled
 	 */
 	public async fetchPlugin(
-		opts: FetchPluginOptions
+		opts: FetchPluginOptions,
 	): Promise<PluginCompatibilityResult> {
 		let database: RegistryPackageResults
 		try {
