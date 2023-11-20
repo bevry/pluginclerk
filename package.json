@@ -1,6 +1,6 @@
 {
   "name": "pluginclerk",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "A clerk for retrieving compatible plugins from the npm database",
   "homepage": "https://github.com/bevry/pluginclerk",
   "license": "Artistic-2.0",
@@ -207,5 +207,8 @@
     "semi": false,
     "singleQuote": true,
     "trailingComma": "all"
+  },
+  "boundation": {
+    "nodeVersionsRange": ">=18"
   }
 }

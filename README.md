@@ -161,8 +161,6 @@ clerk
 } */
 ```
 
-Node.js versions 15 and 16 will need to use `--experimental-global-fetch`.
-
 <!-- INSTALL/ -->
 
 <h2>Install</h2>
@@ -177,7 +175,7 @@ Node.js versions 15 and 16 will need to use `--experimental-global-fetch`.
 <a href="https://deno.land" title="Deno is a secure runtime for JavaScript and TypeScript, it is an alternative for Node.js"><h3>Deno</h3></a>
 
 ``` typescript
-import pkg from 'https://unpkg.com/pluginclerk@^6.0.0/edition-deno/index.ts'
+import pkg from 'https://unpkg.com/pluginclerk@^6.1.0/edition-deno/index.ts'
 ```
 
 <h3><a href="https://editions.bevry.me" title="Editions are the best way to produce and consume packages you care about.">Editions</a></h3>
